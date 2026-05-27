@@ -1,0 +1,318 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "User API Collection",
+    "contact" : { },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "https://api.example.com"
+  } ],
+  "paths" : {
+    "/users" : {
+      "get" : {
+        "summary" : "GET /users",
+        "description" : "GET /users",
+        "operationId" : "getUsers",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "1"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "5"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "limit" : {
+                      "type" : "number",
+                      "example" : 5
+                    },
+                    "page" : {
+                      "type" : "number",
+                      "example" : 1
+                    },
+                    "total" : {
+                      "type" : "number",
+                      "example" : 100
+                    },
+                    "users" : {
+                      "type" : "array",
+                      "example" : [ {
+                        "email" : "alice@example.com",
+                        "id" : 1,
+                        "name" : "Alice"
+                      }, {
+                        "email" : "bob@example.com",
+                        "id" : 2,
+                        "name" : "Bob"
+                      } ],
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "email" : {
+                            "type" : "string",
+                            "example" : "alice@example.com"
+                          },
+                          "id" : {
+                            "type" : "number",
+                            "example" : 1
+                          },
+                          "name" : {
+                            "type" : "string",
+                            "example" : "Alice"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples" : {
+                  "200 OK" : {
+                    "value" : {
+                      "limit" : 5,
+                      "page" : 1,
+                      "total" : 100,
+                      "users" : [ {
+                        "email" : "alice@example.com",
+                        "id" : 1,
+                        "name" : "Alice"
+                      }, {
+                        "email" : "bob@example.com",
+                        "id" : 2,
+                        "name" : "Bob"
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "POST /users",
+        "description" : "POST /users",
+        "operationId" : "postUsers",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "example" : "charlie@example.com"
+                  },
+                  "name" : {
+                    "type" : "string",
+                    "example" : "Charlie"
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "example" : "Password123!"
+                  }
+                }
+              },
+              "examples" : {
+                "POST /users" : {
+                  "value" : {
+                    "email" : "charlie@example.com",
+                    "name" : "Charlie",
+                    "password" : "Password123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "201 Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "email" : {
+                      "type" : "string",
+                      "example" : "charlie@example.com"
+                    },
+                    "id" : {
+                      "type" : "number",
+                      "example" : 3
+                    },
+                    "name" : {
+                      "type" : "string",
+                      "example" : "Charlie"
+                    }
+                  }
+                },
+                "examples" : {
+                  "201 Created" : {
+                    "value" : {
+                      "email" : "charlie@example.com",
+                      "id" : 3,
+                      "name" : "Charlie"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "400 Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "error" : {
+                      "type" : "string",
+                      "example" : "Email already exists"
+                    }
+                  }
+                },
+                "examples" : {
+                  "400 Bad Request" : {
+                    "value" : {
+                      "error" : "Email already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/1" : {
+      "get" : {
+        "summary" : "GET /users/:id",
+        "description" : "GET /users/:id",
+        "operationId" : "getUsersId",
+        "responses" : {
+          "200" : {
+            "description" : "200 OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "email" : {
+                      "type" : "string",
+                      "example" : "alice@example.com"
+                    },
+                    "id" : {
+                      "type" : "number",
+                      "example" : 1
+                    },
+                    "name" : {
+                      "type" : "string",
+                      "example" : "Alice"
+                    }
+                  }
+                },
+                "examples" : {
+                  "200 OK" : {
+                    "value" : {
+                      "email" : "alice@example.com",
+                      "id" : 1,
+                      "name" : "Alice"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "404 Not Found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "error" : {
+                      "type" : "string",
+                      "example" : "User not found"
+                    }
+                  }
+                },
+                "examples" : {
+                  "404 Not Found" : {
+                    "value" : {
+                      "error" : "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/3" : {
+      "delete" : {
+        "summary" : "DELETE /users/:id",
+        "description" : "DELETE /users/:id",
+        "operationId" : "deleteUsersId",
+        "responses" : {
+          "204" : {
+            "description" : "204 No Content",
+            "content" : {
+              "text/plain" : {
+                "examples" : {
+                  "204 No Content" : {
+                    "value" : ""
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "404 Not Found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "error" : {
+                      "type" : "string",
+                      "example" : "User not found"
+                    }
+                  }
+                },
+                "examples" : {
+                  "404 Not Found" : {
+                    "value" : {
+                      "error" : "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
