@@ -1,0 +1,831 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "Tax API",
+    "description" : "Internal API for the Tax Service.",
+    "contact" : {
+      "email" : "dev@tevo.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.2.5"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.dev.swaggerhub.com/metry/tax-api-123/1.2.5",
+    "description" : "SwaggerHub API Auto Mocking"
+  }, {
+    "url" : "https://api.staging.tevo.com/tax/1.2.5",
+    "description" : "Main staging server"
+  }, {
+    "url" : "https://api.sandbox.tevo.com/tax/1.2.5",
+    "description" : "Main staging server"
+  }, {
+    "url" : "https://api.tevo.com/tax/1.2.5",
+    "description" : "Main production server"
+  }, {
+    "url" : "https://virtserver.swaggerhub.com/Tevo/tax-api/1.2.5",
+    "description" : "SwaggerHub API Auto Mocking"
+  } ],
+  "security" : [ {
+    "ApiKeyAuth" : [ ]
+  } ],
+  "paths" : {
+    "/areas" : {
+      "post" : {
+        "tags" : [ "Areas" ],
+        "summary" : "Creates/gets a tax area",
+        "description" : "Given address info, return a tax area.",
+        "operationId" : "postAreas",
+        "requestBody" : {
+          "description" : "Contains address details",
+          "content" : {
+            "application/vnd.api+json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AreaRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "$ref" : "#/components/responses/Area"
+          },
+          "400" : {
+            "$ref" : "#/components/responses/400BadRequest"
+          },
+          "422" : {
+            "$ref" : "#/components/responses/422UnprocessableEntity"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/500InternalError"
+          }
+        }
+      }
+    },
+    "/quotes" : {
+      "post" : {
+        "tags" : [ "Quotes" ],
+        "summary" : "Creates a tax quote",
+        "description" : "Given tax area id, buyer/seller info, and pricing items, return a tax quote.",
+        "operationId" : "postQuotes",
+        "requestBody" : {
+          "description" : "Containing order pricing and ticket/event attributes",
+          "content" : {
+            "application/vnd.api+json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QuoteRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "$ref" : "#/components/responses/Quote"
+          },
+          "400" : {
+            "$ref" : "#/components/responses/400BadRequest"
+          },
+          "422" : {
+            "$ref" : "#/components/responses/422UnprocessableEntity"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/500InternalError"
+          },
+          "501" : {
+            "$ref" : "#/components/responses/501NotImplemented"
+          }
+        }
+      }
+    },
+    "/quotes/{uuid}" : {
+      "get" : {
+        "tags" : [ "Quotes" ],
+        "summary" : "Get an existing tax quote response",
+        "description" : "Given a tax quote id, retrieve the existing quote response.",
+        "operationId" : "getQuote",
+        "parameters" : [ {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The reference UUID for an entity",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Identifier"
+            } ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "$ref" : "#/components/responses/Quote"
+          },
+          "400" : {
+            "$ref" : "#/components/responses/400BadRequest"
+          },
+          "404" : {
+            "$ref" : "#/components/responses/404NotFound"
+          },
+          "422" : {
+            "$ref" : "#/components/responses/422UnprocessableEntity"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/500InternalError"
+          },
+          "501" : {
+            "$ref" : "#/components/responses/501NotImplemented"
+          }
+        }
+      }
+    },
+    "/quotes/{uuid}/invoices" : {
+      "post" : {
+        "tags" : [ "Quotes" ],
+        "summary" : "Creates an invoice for an existing tax quote",
+        "description" : "Given a tax quote id, and pricing items, return no content",
+        "operationId" : "postQuoteInvoices",
+        "parameters" : [ {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The reference UUID for an entity",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Identifier"
+            } ]
+          }
+        } ],
+        "requestBody" : {
+          "description" : "A JSON API formatted body with tax quote id and order number",
+          "content" : {
+            "application/vnd.api+json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/InvoiceRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "$ref" : "#/components/responses/204NoContent"
+          },
+          "400" : {
+            "$ref" : "#/components/responses/400BadRequest"
+          },
+          "422" : {
+            "$ref" : "#/components/responses/422UnprocessableEntity"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/500InternalError"
+          },
+          "501" : {
+            "$ref" : "#/components/responses/501NotImplemented"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AreaRequest" : {
+        "required" : [ "data" ],
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "required" : [ "attributes", "type" ],
+            "type" : "object",
+            "properties" : {
+              "type" : {
+                "$ref" : "#/components/schemas/AddressType"
+              },
+              "attributes" : {
+                "$ref" : "#/components/schemas/AreaRequestAttributes"
+              }
+            }
+          }
+        }
+      },
+      "AddressType" : {
+        "type" : "string",
+        "description" : "The Address entity type",
+        "example" : "addresses"
+      },
+      "AreaRequestAttributes" : {
+        "type" : "object",
+        "properties" : {
+          "line1" : {
+            "$ref" : "#/components/schemas/AttributeAddressLine1"
+          },
+          "line2" : {
+            "$ref" : "#/components/schemas/AttributeAddressLine2"
+          },
+          "line3" : {
+            "$ref" : "#/components/schemas/AttributeAddressLine3"
+          },
+          "locality" : {
+            "$ref" : "#/components/schemas/AttributeAddressLocality"
+          },
+          "region" : {
+            "$ref" : "#/components/schemas/AttributeAddressRegion"
+          },
+          "post_code" : {
+            "$ref" : "#/components/schemas/AttributeAddressPostCode"
+          },
+          "country_code" : {
+            "$ref" : "#/components/schemas/AttributeAddressCountryCode"
+          },
+          "latitude" : {
+            "$ref" : "#/components/schemas/AttributeLatitude"
+          },
+          "longitude" : {
+            "$ref" : "#/components/schemas/AttributeLongitude"
+          }
+        }
+      },
+      "AreaResponse" : {
+        "required" : [ "data" ],
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "required" : [ "attributes", "id", "type" ],
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "$ref" : "#/components/schemas/Identifier"
+              },
+              "type" : {
+                "$ref" : "#/components/schemas/AreaType"
+              },
+              "attributes" : {
+                "$ref" : "#/components/schemas/AreaResponseAttributes"
+              }
+            }
+          }
+        }
+      },
+      "Identifier" : {
+        "type" : "string",
+        "description" : "A unique identifier",
+        "format" : "uuid",
+        "example" : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      },
+      "AreaType" : {
+        "type" : "string",
+        "description" : "The Area entity type",
+        "example" : "areas"
+      },
+      "AreaResponseAttributes" : {
+        "required" : [ "confidence", "tax_area_id" ],
+        "type" : "object",
+        "properties" : {
+          "confidence" : {
+            "$ref" : "#/components/schemas/AttributePercent"
+          },
+          "tax_area_id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          }
+        }
+      },
+      "AttributePercent" : {
+        "maximum" : 100,
+        "minimum" : 0,
+        "type" : "number",
+        "description" : "A percentage from 0.0 to 100.0",
+        "example" : 40.71
+      },
+      "AttributeLegacyId" : {
+        "minimum" : 1,
+        "type" : "integer",
+        "description" : "A numeric identifier",
+        "example" : 1337
+      },
+      "ErrorResponse" : {
+        "required" : [ "errors" ],
+        "type" : "object",
+        "properties" : {
+          "errors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ErrorModel"
+            }
+          }
+        }
+      },
+      "ErrorModel" : {
+        "required" : [ "code", "detail", "status" ],
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "example" : "422"
+          },
+          "code" : {
+            "type" : "string",
+            "example" : "unprocessable_entity",
+            "enum" : [ "bad_request", "conflict", "forbidden", "internal_server_error", "limit", "not_found", "offset", "pricing_invalid", "quantity_unavailable", "unprocessable_entity" ]
+          },
+          "detail" : {
+            "type" : "string",
+            "example" : "Could not process request due to..."
+          },
+          "source" : {
+            "type" : "object",
+            "properties" : {
+              "pointer" : {
+                "type" : "string",
+                "example" : "/data/attributes/title"
+              },
+              "parameter" : {
+                "type" : "string",
+                "example" : "uuid"
+              }
+            }
+          }
+        }
+      },
+      "QuoteRequest" : {
+        "required" : [ "data" ],
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "required" : [ "attributes", "type" ],
+            "type" : "object",
+            "properties" : {
+              "type" : {
+                "$ref" : "#/components/schemas/QuoteType"
+              },
+              "attributes" : {
+                "$ref" : "#/components/schemas/QuoteRequestAttributes"
+              }
+            }
+          }
+        }
+      },
+      "QuoteType" : {
+        "type" : "string",
+        "description" : "The Quote entity type",
+        "example" : "quotes"
+      },
+      "QuoteRequestAttributes" : {
+        "required" : [ "buyer", "category_id", "product", "seller", "tax_area_id", "timestamp", "wholesale" ],
+        "type" : "object",
+        "properties" : {
+          "timestamp" : {
+            "$ref" : "#/components/schemas/AttributeTimestamp"
+          },
+          "tax_area_id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "category_id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "wholesale" : {
+            "$ref" : "#/components/schemas/SaleObject"
+          },
+          "retail" : {
+            "$ref" : "#/components/schemas/SaleObject"
+          },
+          "buyer" : {
+            "$ref" : "#/components/schemas/BuyerObject"
+          },
+          "seller" : {
+            "$ref" : "#/components/schemas/SellerObject"
+          },
+          "product" : {
+            "$ref" : "#/components/schemas/ProductObject"
+          }
+        }
+      },
+      "AttributeTimestamp" : {
+        "type" : "integer",
+        "description" : "A valid unix timestamp representing seconds since epoch",
+        "example" : 1650576132
+      },
+      "SaleObject" : {
+        "required" : [ "subtotal" ],
+        "type" : "object",
+        "properties" : {
+          "subtotal" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "additional_expense" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "service_fee" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "shipping" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "discount" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          }
+        }
+      },
+      "AttributePriceFloat" : {
+        "type" : "number",
+        "description" : "A price value rounded to the cent. Should only be used when an AttributePrice string is impossible to model, or for legacy definitions.",
+        "example" : 123.45
+      },
+      "BuyerObject" : {
+        "required" : [ "id", "type" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          }
+        }
+      },
+      "Type" : {
+        "type" : "string",
+        "description" : "The entity type",
+        "example" : "entity"
+      },
+      "SellerObject" : {
+        "required" : [ "id", "type" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          }
+        }
+      },
+      "ProductObject" : {
+        "required" : [ "available_tickets_count", "id", "price", "quantity", "taxed_cost" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "price" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "quantity" : {
+            "$ref" : "#/components/schemas/AttributeQuantity"
+          },
+          "available_tickets_count" : {
+            "$ref" : "#/components/schemas/AttributeQuantity"
+          },
+          "taxed_cost" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          }
+        }
+      },
+      "AttributeQuantity" : {
+        "minimum" : 0,
+        "type" : "integer",
+        "description" : "A non-negative integer representing a quantity",
+        "example" : 4
+      },
+      "QuoteResponse" : {
+        "required" : [ "data" ],
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "required" : [ "attributes", "id", "type" ],
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "$ref" : "#/components/schemas/Identifier"
+              },
+              "type" : {
+                "$ref" : "#/components/schemas/QuoteType"
+              },
+              "attributes" : {
+                "$ref" : "#/components/schemas/QuoteResponseAttributes"
+              }
+            }
+          }
+        }
+      },
+      "QuoteResponseAttributes" : {
+        "required" : [ "buyer", "category_id", "product", "seller", "tax_area_id", "timestamp", "wholesale" ],
+        "type" : "object",
+        "properties" : {
+          "timestamp" : {
+            "$ref" : "#/components/schemas/AttributeTimestamp"
+          },
+          "tax_area_id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "category_id" : {
+            "$ref" : "#/components/schemas/AttributeLegacyId"
+          },
+          "wholesale" : {
+            "$ref" : "#/components/schemas/QuotedSaleObject"
+          },
+          "retail" : {
+            "$ref" : "#/components/schemas/QuotedSaleObject"
+          },
+          "buyer" : {
+            "$ref" : "#/components/schemas/BuyerObject"
+          },
+          "seller" : {
+            "$ref" : "#/components/schemas/SellerObject"
+          },
+          "product" : {
+            "$ref" : "#/components/schemas/ProductObject"
+          }
+        }
+      },
+      "QuotedSaleObject" : {
+        "required" : [ "subtotal", "tax", "total" ],
+        "type" : "object",
+        "properties" : {
+          "subtotal" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "additional_expense" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "service_fee" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "shipping" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "discount" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "tax" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          },
+          "total" : {
+            "$ref" : "#/components/schemas/AttributePriceFloat"
+          }
+        }
+      },
+      "InvoiceRequest" : {
+        "required" : [ "data" ],
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "required" : [ "attributes", "id", "type" ],
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "$ref" : "#/components/schemas/Identifier"
+              },
+              "type" : {
+                "$ref" : "#/components/schemas/InvoiceType"
+              },
+              "attributes" : {
+                "$ref" : "#/components/schemas/InvoiceRequestAttributes"
+              }
+            }
+          }
+        }
+      },
+      "InvoiceType" : {
+        "type" : "string",
+        "description" : "The Invoice entity type",
+        "example" : "invoices"
+      },
+      "InvoiceRequestAttributes" : {
+        "required" : [ "order" ],
+        "type" : "object",
+        "properties" : {
+          "order" : {
+            "$ref" : "#/components/schemas/OrderObject"
+          }
+        }
+      },
+      "OrderObject" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/AttributeShortID"
+          }
+        }
+      },
+      "AttributeShortID" : {
+        "type" : "string",
+        "description" : "A unique identifier to use publicly",
+        "example" : "ABC123"
+      },
+      "AddressableEntity" : {
+        "type" : "object",
+        "properties" : {
+          "line1" : {
+            "$ref" : "#/components/schemas/AttributeAddressLine1"
+          },
+          "line2" : {
+            "$ref" : "#/components/schemas/AttributeAddressLine2"
+          },
+          "line3" : {
+            "$ref" : "#/components/schemas/AttributeAddressLine3"
+          },
+          "locality" : {
+            "$ref" : "#/components/schemas/AttributeAddressLocality"
+          },
+          "region" : {
+            "$ref" : "#/components/schemas/AttributeAddressRegion"
+          },
+          "post_code" : {
+            "$ref" : "#/components/schemas/AttributeAddressPostCode"
+          },
+          "country_code" : {
+            "$ref" : "#/components/schemas/AttributeAddressCountryCode"
+          },
+          "latitude" : {
+            "$ref" : "#/components/schemas/AttributeLatitude"
+          },
+          "longitude" : {
+            "$ref" : "#/components/schemas/AttributeLongitude"
+          }
+        }
+      },
+      "AttributeAddressLine1" : {
+        "type" : "string",
+        "description" : "A valid address line",
+        "example" : "123 Main Street"
+      },
+      "AttributeAddressLine2" : {
+        "type" : "string",
+        "description" : "A valid address line",
+        "example" : "Suite 1337"
+      },
+      "AttributeAddressLine3" : {
+        "type" : "string",
+        "description" : "A valid address line",
+        "example" : "Department of Foo"
+      },
+      "AttributeAddressLocality" : {
+        "type" : "string",
+        "description" : "A valid address locality",
+        "example" : "New York"
+      },
+      "AttributeAddressRegion" : {
+        "type" : "string",
+        "description" : "A valid address region",
+        "example" : "NY"
+      },
+      "AttributeAddressPostCode" : {
+        "type" : "string",
+        "description" : "A valid address post code",
+        "example" : "10001"
+      },
+      "AttributeAddressCountryCode" : {
+        "type" : "string",
+        "description" : "A valid address country code",
+        "example" : "US"
+      },
+      "AttributeLatitude" : {
+        "type" : "string",
+        "description" : "A geographic logitude",
+        "example" : "40.7128"
+      },
+      "AttributeLongitude" : {
+        "type" : "string",
+        "description" : "A geographic logitude",
+        "example" : "74.0060"
+      }
+    },
+    "responses" : {
+      "Area" : {
+        "description" : "The requested tax area",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/AreaResponse"
+            }
+          }
+        }
+      },
+      "400BadRequest" : {
+        "description" : "Bad Request",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : {
+              "errors" : [ {
+                "status" : "400",
+                "code" : "bad_request",
+                "detail" : "Bad Request"
+              } ]
+            }
+          }
+        }
+      },
+      "422UnprocessableEntity" : {
+        "description" : "Unprocessable Entity",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : {
+              "errors" : [ {
+                "status" : "422",
+                "code" : "unprocessable_entity",
+                "detail" : "Unprocessable Entity"
+              } ]
+            }
+          }
+        }
+      },
+      "500InternalError" : {
+        "description" : "Internal Server Error",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : {
+              "errors" : [ {
+                "status" : "500",
+                "code" : "internal_server_error",
+                "detail" : "Internal Server Error"
+              } ]
+            }
+          }
+        }
+      },
+      "Quote" : {
+        "description" : "The requested tax quote",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/QuoteResponse"
+            }
+          }
+        }
+      },
+      "501NotImplemented" : {
+        "description" : "Not Implemented",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : {
+              "errors" : [ {
+                "status" : "501",
+                "code" : "not_implemented",
+                "detail" : "Not Implemented"
+              } ]
+            }
+          }
+        }
+      },
+      "404NotFound" : {
+        "description" : "Record Not Found",
+        "content" : {
+          "application/vnd.api+json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : {
+              "errors" : [ {
+                "status" : "404",
+                "code" : "not_found",
+                "detail" : "Record not found"
+              } ]
+            }
+          }
+        }
+      },
+      "204NoContent" : {
+        "description" : "No Content"
+      }
+    },
+    "parameters" : {
+      "EntityUUID" : {
+        "name" : "uuid",
+        "in" : "path",
+        "description" : "The reference UUID for an entity",
+        "required" : true,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "allOf" : [ {
+            "$ref" : "#/components/schemas/Identifier"
+          } ]
+        }
+      }
+    },
+    "securitySchemes" : {
+      "ApiKeyAuth" : {
+        "type" : "apiKey",
+        "name" : "X-API-KEY",
+        "in" : "header"
+      }
+    }
+  }
+}
