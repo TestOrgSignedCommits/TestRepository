@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  description: Minimal Reproducible Example for Inline Responses
+  version: 1.1.0
+  title: Minimal Example test
+paths:
+  /inventory:
+    get:
+      tags:
+        - developers
+      summary: searches inventory
+      operationId: searchInventory
+      description: |
+        By passing in the appropriate options, you can search for
+        available inventory in the system
+      responses:
+        '201':
+          description: test for inline-responses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    $ref: '#/components/schemas/InventoryItem'
